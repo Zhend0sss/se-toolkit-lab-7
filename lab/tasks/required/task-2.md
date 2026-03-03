@@ -28,7 +28,7 @@ The back-end contains intentional bugs that you will discover and fix by writing
     - [1.3.5. Transfer the changes to your VM](#135-transfer-the-changes-to-your-vm)
     - [1.3.6. Deploy the fixed `app` service on your VM](#136-deploy-the-fixed-app-service-on-your-vm)
   - [1.4. Part B: Run end-to-end tests remotely](#14-part-b-run-end-to-end-tests-remotely)
-    - [1.4.1. Set the required environment variables in the terminal](#141-set-the-required-environment-variables-in-the-terminal)
+    - [1.4.1. Create the test environment file](#141-create-the-test-environment-file)
     - [1.4.2. Run existing end-to-end tests](#142-run-existing-end-to-end-tests)
     - [1.4.3. Add two end-to-end tests](#143-add-two-end-to-end-tests)
     - [1.4.4. Fix the bug](#144-fix-the-bug)
@@ -262,35 +262,25 @@ Title: `[Task] Back-end Testing`
 > [!NOTE]
 > End-to-end tests run on your local machine and send real [`HTTP` requests](../../../wiki/http.md#http-request) to the deployed version on the VM.
 
-#### 1.4.1. Set the required environment variables in the terminal
+#### 1.4.1. Create the test environment file
 
-<!-- TODO use pydantic-settings for the tests -->
-<!-- TODO use .env.tests.example and .env.tests.secret -->
-1. To set the [base URL](../../../wiki/api.md#base-url) of your deployed [API](../../../wiki/api.md#what-is-an-api),
+<!-- TODO dotenv-tests-secret.md -->
+
+1. To copy the content of [`.env.tests.example`](../../../.env.tests.example) to [`.env.tests.secret`](../../../wiki/dotenv-tests-secret.md#what-is-envtestssecret),
 
    [run in the `VS Code Terminal`](../../../wiki/vs-code.md#run-a-command-in-the-vs-code-terminal):
 
    ```terminal
-   export API_BASE_URL=http://<your-vm-ip-address>:<caddy-port>
+   cp .env.tests.example .env.tests.secret
    ```
 
-   Replace:
+2. [Open `.env.tests.secret`](../../../wiki/vs-code.md#open-the-file).
+3. Set `API_BASE_URL` to `http://<your-vm-ip-address>:<caddy-port>`. Replace:
 
    - [`<your-vm-ip-address>`](../../../wiki/vm.md#your-vm-ip-address)
    - [`<caddy-port>`](../../../wiki/caddy.md#caddy-port)
 
-2. To set the [API key](../../../wiki/api.md#api-key),
-
-   [run in the `VS Code Terminal`](../../../wiki/vs-code.md#run-a-command-in-the-vs-code-terminal):
-
-   <!-- TODO use the value from .env.docker.secret on the VM -->
-   <!-- TODO explain how to get that value -->
-
-   ```terminal
-   export API_KEY=<your-api-key>
-   ```
-
-   Replace `<your-api-key>` with the same value as in your [`.env.docker.secret`](../../../wiki/dotenv-docker-secret.md#api_key) file on the VM.
+4. Set `API_KEY` to the same value as [`API_KEY`](../../../wiki/dotenv-docker-secret.md#api_key) in [`.env.docker.secret`](../../../wiki/dotenv-docker-secret.md#what-is-envdockersecret) on the VM.
 
 #### 1.4.2. Run existing end-to-end tests
 
