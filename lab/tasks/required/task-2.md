@@ -41,10 +41,10 @@ uv run agent.py "How do you resolve a merge conflict?"
 ```json
 {
   "answer": "Edit the conflicting file, choose which changes to keep, then stage and commit.",
-  "source": "wiki/git-workflow.md#resolving-merge-conflicts",
+  "source": "wiki/git-vscode.md#resolve-a-merge-conflict",
   "tool_calls": [
     {"tool": "list_files", "args": {"path": "wiki"}, "result": "git-workflow.md\n..."},
-    {"tool": "read_file", "args": {"path": "wiki/git-workflow.md"}, "result": "..."}
+    {"tool": "read_file", "args": {"path": "wiki/git-vscode.md"}, "result": "..."}
   ]
 }
 ```
@@ -91,7 +91,7 @@ Update `AGENT.md` to document the tools, the agentic loop, and your system promp
 
 Add 2 regression tests for the documentation agent. Example questions:
 
-- `"How do you resolve a merge conflict?"` → expects `read_file` in tool_calls, `wiki/git-workflow.md` in source.
+- `"How do you resolve a merge conflict?"` → expects `read_file` in tool_calls, `wiki/git-vscode.md` in source.
 - `"What files are in the wiki?"` → expects `list_files` in tool_calls.
 
 ## Acceptance criteria
