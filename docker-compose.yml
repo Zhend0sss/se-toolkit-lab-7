@@ -2,6 +2,7 @@ services:
   backend:
     build:
       context: .
+      dockerfile: backend/Dockerfile
       args:
         REGISTRY_PREFIX: ${REGISTRY_PREFIX:-harbor.pg.innopolis.university/docker-hub-cache/}
     restart: unless-stopped

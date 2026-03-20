@@ -7,7 +7,7 @@ parameter to filter results by lab (e.g., "lab-01").
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import case, cast, func, Numeric
-from sqlmodel import select
+from sqlmodel import col, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.database import get_session
@@ -20,7 +20,7 @@ router = APIRouter()
 
 async def _find_lab_and_tasks(
     lab: str, session: AsyncSession
-) -> tuple[ItemRecord | None, list[int]]:
+) -> tuple[ItemRecord | None, list[int | None]]:
     """Find a lab item and its child task IDs."""
     # Convert "lab-04" → "Lab 04" pattern for title matching
     lab_number = lab.replace("lab-", "").lstrip("0") or "0"
@@ -66,23 +66,23 @@ async def get_scores(
         ]
 
     bucket = case(
-        (InteractionLog.score <= 25, "0-25"),
-        (InteractionLog.score <= 50, "26-50"),
-        (InteractionLog.score <= 75, "51-75"),
+        (col(InteractionLog.score) <= 25, "0-25"),
+        (col(InteractionLog.score) <= 50, "26-50"),
+        (col(InteractionLog.score) <= 75, "51-75"),
         else_="76-100",
     )
 
     stmt = (
         select(bucket.label("bucket"), func.count().label("count"))
         .where(
-            InteractionLog.item_id.in_(item_ids),
-            InteractionLog.score.is_not(None),
+            col(InteractionLog.item_id).in_(item_ids),
+            col(InteractionLog.score).is_not(None),
         )
         .group_by(bucket)
     )
 
     rows = (await session.exec(stmt)).all()
-    result_map = {r.bucket: r.count for r in rows}
+    result_map = {bucket: count for bucket, count in rows}
 
     return [
         {"bucket": b, "count": result_map.get(b, 0)}
@@ -94,7 +94,7 @@ async def get_scores(
 async def get_pass_rates(
     lab: str = Query(..., description="Lab identifier, e.g. 'lab-01'"),
     session: AsyncSession = Depends(get_session),
-):
+) -> list[dict[str, str | float | int]]:
     """Per-task pass rates for a given lab."""
     lab_item, _ = await _find_lab_and_tasks(lab, session)
     if not lab_item:
@@ -106,7 +106,7 @@ async def get_pass_rates(
         )
     ).all()
 
-    results = []
+    results: list[dict[str, str | float | int]] = []
     for task in sorted(tasks, key=lambda t: t.title):
         stmt = select(
             func.round(cast(func.avg(InteractionLog.score), Numeric), 1).label(
@@ -115,17 +115,19 @@ async def get_pass_rates(
             func.count().label("attempts"),
         ).where(
             InteractionLog.item_id == task.id,
-            InteractionLog.score.is_not(None),
+            col(InteractionLog.score).is_not(None),
         )
         row = (await session.exec(stmt)).first()
-        if row and row.attempts > 0:
-            results.append(
-                {
-                    "task": task.title,
-                    "avg_score": float(row.avg_score) if row.avg_score else 0.0,
-                    "attempts": row.attempts,
-                }
-            )
+        if row:
+            avg_score, attempts = row
+            if attempts > 0:
+                results.append(
+                    {
+                        "task": task.title,
+                        "avg_score": float(avg_score) if avg_score else 0.0,
+                        "attempts": attempts,
+                    }
+                )
 
     return results
 
@@ -134,7 +136,7 @@ async def get_pass_rates(
 async def get_timeline(
     lab: str = Query(..., description="Lab identifier, e.g. 'lab-01'"),
     session: AsyncSession = Depends(get_session),
-):
+) -> list[dict[str, str | int]]:
     """Submissions per day for a given lab."""
     _, item_ids = await _find_lab_and_tasks(lab, session)
     if not item_ids:
@@ -145,20 +147,22 @@ async def get_timeline(
             func.date(InteractionLog.created_at).label("date"),
             func.count().label("submissions"),
         )
-        .where(InteractionLog.item_id.in_(item_ids))
+        .where(col(InteractionLog.item_id).in_(item_ids))
         .group_by(func.date(InteractionLog.created_at))
         .order_by(func.date(InteractionLog.created_at))
     )
 
     rows = (await session.exec(stmt)).all()
-    return [{"date": str(r.date), "submissions": r.submissions} for r in rows]
+    return [
+        {"date": str(date), "submissions": submissions} for date, submissions in rows
+    ]
 
 
 @router.get("/groups")
 async def get_groups(
     lab: str = Query(..., description="Lab identifier, e.g. 'lab-01'"),
     session: AsyncSession = Depends(get_session),
-):
+) -> list[dict[str, str | float | int]]:
     """Per-group performance for a given lab."""
     _, item_ids = await _find_lab_and_tasks(lab, session)
     if not item_ids:
@@ -166,29 +170,29 @@ async def get_groups(
 
     stmt = (
         select(
-            Learner.student_group.label("group"),
+            col(Learner.student_group),
             func.round(cast(func.avg(InteractionLog.score), Numeric), 1).label(
                 "avg_score"
             ),
             func.count(func.distinct(InteractionLog.learner_id)).label("students"),
         )
-        .join(Learner, InteractionLog.learner_id == Learner.id)
+        .join(Learner, col(InteractionLog.learner_id) == col(Learner.id))
         .where(
-            InteractionLog.item_id.in_(item_ids),
-            InteractionLog.score.is_not(None),
+            col(InteractionLog.item_id).in_(item_ids),
+            col(InteractionLog.score).is_not(None),
         )
-        .group_by(Learner.student_group)
-        .order_by(Learner.student_group)
+        .group_by(col(Learner.student_group))
+        .order_by(col(Learner.student_group))
     )
 
     rows = (await session.exec(stmt)).all()
     return [
         {
-            "group": r.group,
-            "avg_score": float(r.avg_score) if r.avg_score else 0.0,
-            "students": r.students,
+            "group": group,
+            "avg_score": float(avg_score) if avg_score else 0.0,
+            "students": students,
         }
-        for r in rows
+        for group, avg_score, students in rows
     ]
 
 
@@ -202,14 +206,14 @@ async def get_completion_rate(
 
     # Count distinct learners with any interaction
     total_stmt = select(func.count(func.distinct(InteractionLog.learner_id))).where(
-        InteractionLog.item_id.in_(item_ids)
+        col(InteractionLog.item_id).in_(item_ids)
     )
     total_learners = (await session.exec(total_stmt)).one()
 
     # Count distinct learners who scored >= 60
     passed_stmt = select(func.count(func.distinct(InteractionLog.learner_id))).where(
-        InteractionLog.item_id.in_(item_ids),
-        InteractionLog.score >= 60,
+        col(InteractionLog.item_id).in_(item_ids),
+        col(InteractionLog.score) >= 60,
     )
     passed_learners = (await session.exec(passed_stmt)).one()
 
@@ -228,7 +232,7 @@ async def get_top_learners(
     lab: str = Query(..., description="Lab identifier, e.g. 'lab-01'"),
     limit: int = Query(default=10, description="Number of top learners to return"),
     session: AsyncSession = Depends(get_session),
-):
+) -> list[dict[str, int | float]]:
     """Top learners by average score for a given lab."""
     _, item_ids = await _find_lab_and_tasks(lab, session)
     if not item_ids:
@@ -240,19 +244,19 @@ async def get_top_learners(
             func.avg(InteractionLog.score).label("avg_score"),
             func.count().label("attempts"),
         )
-        .where(InteractionLog.item_id.in_(item_ids))
-        .group_by(InteractionLog.learner_id)
+        .where(col(InteractionLog.item_id).in_(item_ids))
+        .group_by(col(InteractionLog.learner_id))
     )
 
     rows = (await session.exec(stmt)).all()
 
-    ranked = sorted(rows, key=lambda r: r.avg_score, reverse=True)
+    ranked = sorted(rows, key=lambda r: r[1], reverse=True)
 
     return [
         {
-            "learner_id": r.learner_id,
-            "avg_score": round(r.avg_score, 1),
-            "attempts": r.attempts,
+            "learner_id": learner_id,
+            "avg_score": round(avg_score, 1),
+            "attempts": attempts,
         }
-        for r in ranked[:limit]
+        for learner_id, avg_score, attempts in ranked[:limit]
     ]

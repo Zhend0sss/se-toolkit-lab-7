@@ -57,7 +57,6 @@
                       --exclude-path 'node_modules' \
                       --exclude-path 'tmp' \
                       --root-dir . \
-                      --cache \
                       --format json \
                       "$ROOT_DIR"/'**/*.md' \
                       | ${pkgs.lib.getExe python} ${./instructors/scripts/find-broken-links/post-process-lychee.py}

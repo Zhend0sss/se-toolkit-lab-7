@@ -15,7 +15,7 @@ from app.models.interaction import (
 router = APIRouter()
 
 
-def _filter_by_item_id(
+def filter_by_item_id(
     interactions: list[InteractionLog], item_id: int | None
 ) -> list[InteractionLog]:
     if item_id is None:
@@ -30,7 +30,7 @@ async def get_interactions(
 ):
     """Get all interactions, optionally filtered by item."""
     interactions = await read_interactions(session)
-    return _filter_by_item_id(interactions, item_id)
+    return filter_by_item_id(interactions, item_id)
 
 
 @router.post("/", response_model=InteractionLog, status_code=201)

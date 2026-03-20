@@ -33,11 +33,11 @@ Docs:
 
 The `backend` service runs the [backend web server](./web-infrastructure.md#web-server).
 
-It builds from the root [`Dockerfile`](../Dockerfile), which uses a multi-stage build: the first stage installs [`Python`](./python.md#what-is-python) dependencies with [`uv`](./python.md#uv), and the second stage runs the application.
+It builds from the root [`backend/Dockerfile`](../backend/Dockerfile), which uses a multi-stage build: the first stage installs [`Python`](./python.md#what-is-python) dependencies with [`uv`](./python.md#uv), and the second stage runs the application.
 
 Configuration in [`docker-compose.yml`](../docker-compose.yml):
 
-- **`build: .`** — builds the [image](./docker.md#image) from the [`Dockerfile`](../Dockerfile) in the project root.
+- **`build: .`** — builds the [image](./docker.md#image) from the [`backend/Dockerfile`](../backend/Dockerfile) in the project root.
 - **`restart: unless-stopped`** — restarts the [container](./docker.md#container) automatically unless it is explicitly stopped.
 - **`ports`** — maps [`BACKEND_HOST_ADDRESS`](./dotenv-docker-secret.md#backend_host_address):[`BACKEND_HOST_PORT`](./dotenv-docker-secret.md#backend_host_port) on the [host](./computer-networks.md#host) to [`BACKEND_CONTAINER_PORT`](./dotenv-docker-secret.md#backend_container_port) inside the container.
 - **`expose`** — makes `BACKEND_CONTAINER_PORT` accessible to other services via [`Docker Compose` networking](./docker-compose.md#docker-compose-networking).

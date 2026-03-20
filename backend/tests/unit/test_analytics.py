@@ -5,11 +5,13 @@ Students implement the analytics endpoints to make these tests pass.
 Run with: uv run poe test
 """
 
+from collections.abc import AsyncGenerator
+
 import pytest
 from datetime import datetime
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import JSON, event
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import JSON, Table
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -18,26 +20,25 @@ from app.models.learner import Learner
 from app.models.interaction import InteractionLog
 
 
+def _patch_jsonb_to_json() -> None:
+    """Replace PostgreSQL JSONB columns with generic JSON for SQLite."""
+    from sqlalchemy.dialects.postgresql import JSONB
+
+    table: Table = SQLModel.metadata.tables["item"]
+    for col in table.columns:
+        if isinstance(col.type, JSONB):
+            col.type = JSON()
+
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
 
 
 @pytest.fixture
-async def engine():
+async def engine() -> AsyncGenerator[AsyncEngine]:
     """Create an in-memory async SQLite engine with test schema."""
-    from sqlalchemy.dialects.postgresql import JSONB
-
-    # Map PostgreSQL JSONB → generic JSON so SQLite can create the table.
-    @event.listens_for(SQLModel.metadata, "column_reflect")
-    def _reflect(inspector, table, column_info):  # noqa: ANN001 ARG001
-        if isinstance(column_info["type"], JSONB):
-            column_info["type"] = JSON()
-
-    # Patch the column type on ItemRecord before creating tables.
-    for col in ItemRecord.__table__.columns:
-        if isinstance(col.type, JSONB):
-            col.type = JSON()
+    _patch_jsonb_to_json()
 
     eng = create_async_engine("sqlite+aiosqlite://", echo=False)
     async with eng.begin() as conn:
@@ -47,7 +48,7 @@ async def engine():
 
 
 @pytest.fixture
-async def session(engine):
+async def session(engine: AsyncEngine):
     """Provide a database session bound to the test engine."""
     async with AsyncSession(engine) as sess:
         yield sess
@@ -188,7 +189,7 @@ async def seed_data(session: AsyncSession):
 
 
 @pytest.fixture
-async def client(engine, seed_data):
+async def client(engine: AsyncEngine, seed_data: None):
     """Create a test HTTP client with the test database injected."""
     from app.main import app
     from app.database import get_session
@@ -298,10 +299,14 @@ class TestPassRates:
         )
         data = {d["task"]: d for d in resp.json()}
         # Repository Setup: (100 + 75 + 100 + 50) / 4 = 81.25 → 81.2
-        assert data["Repository Setup"]["avg_score"] == pytest.approx(81.2, abs=0.1)
+        assert data["Repository Setup"]["avg_score"] == pytest.approx(  # pyright: ignore[reportUnknownMemberType]
+            81.2, abs=0.1
+        )
         assert data["Repository Setup"]["attempts"] == 4
         # Back-end Testing: (80 + 20 + 60) / 3 = 53.33 → 53.3
-        assert data["Back-end Testing"]["avg_score"] == pytest.approx(53.3, abs=0.1)
+        assert data["Back-end Testing"]["avg_score"] == pytest.approx(  # pyright: ignore[reportUnknownMemberType]
+            53.3, abs=0.1
+        )
         assert data["Back-end Testing"]["attempts"] == 3
 
     @pytest.mark.asyncio
@@ -423,11 +428,17 @@ class TestGroups:
         )
         data = {d["group"]: d for d in resp.json()}
         # B23-CS-01: scores 100, 75, 80, 20 → avg 68.75 → 68.8
-        assert data["B23-CS-01"]["avg_score"] == pytest.approx(68.8, abs=0.1)
+        assert data["B23-CS-01"]["avg_score"] == pytest.approx(  # pyright: ignore[reportUnknownMemberType]
+            68.8, abs=0.1
+        )
         # B23-CS-02: scores 100, 50, 0 → avg 50.0
-        assert data["B23-CS-02"]["avg_score"] == pytest.approx(50.0, abs=0.1)
+        assert data["B23-CS-02"]["avg_score"] == pytest.approx(  # pyright: ignore[reportUnknownMemberType]
+            50.0, abs=0.1
+        )
         # B23-DS-01: score 60 → avg 60.0
-        assert data["B23-DS-01"]["avg_score"] == pytest.approx(60.0, abs=0.1)
+        assert data["B23-DS-01"]["avg_score"] == pytest.approx(  # pyright: ignore[reportUnknownMemberType]
+            60.0, abs=0.1
+        )
 
     @pytest.mark.asyncio
     async def test_groups_has_correct_fields(self, client: AsyncClient):

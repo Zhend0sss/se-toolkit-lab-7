@@ -19,8 +19,6 @@ jobs:
         with:
           primary-key: lint-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
           restore-prefixes-first-match: nix-${{ runner.os }}-
-          paths:
-            .lycheecache
           # do purge caches
           purge: true
           # purge all versions of the cache

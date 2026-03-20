@@ -80,6 +80,13 @@ help = "Run end-to-end tests against the deployed API"
 cmd = "pytest backend/tests/e2e"
 envfile = "backend/.env.tests.e2e.secret"
 
+# Query Qwen Code API
+
+[tool.poe.tasks.query-qwen-code-api]
+help = "Query the Qwen Code API: poe query-qwen-code-api [OPTIONS] <prompt>"
+cmd = "python scripts/query-qwen-code-api.py"
+envfile = ".env.bot.secret"
+
 [tool.pyright]
 include = ["backend"]
 exclude = ["**/__pycache__", "**/node_modules", "**/.*", ".venv", ".direnv"]

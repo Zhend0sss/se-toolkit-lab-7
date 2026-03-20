@@ -91,18 +91,18 @@ See:
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
    ```terminal
-   curl -s <qwen-code-api-base-url>/chat/completions \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer <qwen-code-api-key>" \
-     -d '{"model":"<qwen-model>","messages":[{"role":"user","content":"What is 2+2?"}]}' \
-     | jq
+   uv run poe query-qwen-code-api \
+     --base-url <qwen-code-api-base-url> \
+     --api-key <qwen-code-api-key> \
+     --model <qwen-model> \
+     "What is 2+2?"
    ```
 
    Replace the placeholders:
 
    - [`<qwen-code-api-base-url>`](#qwen-code-api-base-url-placeholder) (depends on the case (REMOTE or LOCAL))
    - `<qwen-code-api-key>` with the value of [`QWEN_CODE_API_KEY`](./qwen-code-api-dotenv-secret.md#qwen_code_api_key) from [`qwen-code-api/.env.secret`](./qwen-code-api-dotenv-secret.md#about-qwen-code-apienvsecret)
-   - `<qwen-model>` with one of the [available models](./qwen-code.md#view-available-models)
+   - `<qwen-code-api-model>` with one of the [available models](./qwen-code.md#view-available-models)
 
 2. When you run it, the output should be similar to this:
 

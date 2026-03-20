@@ -31,9 +31,9 @@ This page describes how to deploy the [LMS API](./lms-api.md#about-the-lms-api) 
 
 1. [Clone the repository](./git-vscode.md#clone-the-repository-using-the-vs-code-terminal)
 
-   with the URL `https://github.com/<your-github-username>/se-toolkit-lab-6`
+   with the URL `https://github.com/<your-github-username>/se-toolkit-lab-7`
 
-   to `~/se-toolkit-lab-6`.
+   to `~/se-toolkit-lab-7`.
 
    Replace the placeholder [`<your-github-username>`](./github.md#your-github-username).
 
@@ -44,7 +44,7 @@ This page describes how to deploy the [LMS API](./lms-api.md#about-the-lms-api) 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
    ```terminal
-   cd ~/se-toolkit-lab-6
+   cd ~/se-toolkit-lab-7
    ```
 
 ### Configure the environment (REMOTE)

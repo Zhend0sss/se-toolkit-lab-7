@@ -10,8 +10,6 @@ __pycache__/
 
 .direnv
 
-.lycheecache
-
 tmp
 
 **/settings.local.json
