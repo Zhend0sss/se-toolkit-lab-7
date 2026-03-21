@@ -9,11 +9,13 @@
   - [Staging environment](#staging-environment)
   - [Production environment](#production-environment)
 - [Environment variable](#environment-variable)
+  - [Create the environment variable `<variable>` with the value `<value>` in the current shell session](#create-the-environment-variable-variable-with-the-value-value-in-the-current-shell-session)
   - [Inspect environment variables](#inspect-environment-variables)
 - [Common environment variables](#common-environment-variables)
   - [`PATH` environment variable](#path-environment-variable)
   - [Inspect `PATH`](#inspect-path)
 - [`.env` file](#env-file)
+  - [Set the `<variable>` to `<value>` in the `.env` file at `<file-path>`](#set-the-variable-to-value-in-the-env-file-at-file-path)
 - [Secrets](#secrets)
   - [Unencrypted secrets](#unencrypted-secrets)
   - [Unencrypted secrets in the repo](#unencrypted-secrets-in-the-repo)
@@ -77,6 +79,36 @@ Docs
 
 Environment variables are named values that are available to a program running in a particular [deployment environment](#deployment-environment).
 
+### Create the environment variable `<variable>` with the value `<value>` in the current shell session
+
+1. To create an environment variable in the current [shell session](./shell.md#shell-session),
+
+   [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
+
+   ```terminal
+   <variable>=<value>
+   ```
+
+   Replace the placeholders:
+
+   - `<variable>` with the name of the variable.
+
+     Example: `VARIABLE_NAME`.
+
+   - `<value>` with the value of the variable.
+
+     Example: `VARIABLE_VALUE`.
+
+     > 🟦 **Note**
+     >
+     > The `VARIABLE_VALUE` is a string.
+
+   Example:
+
+   ```terminal
+   VARIABLE_NAME=VARIABLE_VALUE
+   ```
+
 ### Inspect environment variables
 
 1. To list all currently available environment variables,
@@ -125,6 +157,61 @@ Examples:
 Docs:
 
 - [Security - `.env`](https://www.dotenv.org/docs/security/env.html)
+
+### Set the `<variable>` to `<value>` in the `.env` file at `<file-path>`
+
+1. (LOCAL):
+
+    1. [Open the file at `<file-path>` using `code`](./vs-code.md#open-the-file-or-the-directory-using-code).
+
+   (REMOTE):
+
+    1. To open the file at `<file-path>` using `nano`,
+
+       [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
+
+       ```terminal
+       nano <file-path>
+       ```
+
+2. Navigate to the line that has `<variable-name>`.
+
+   The text should look similar to this:
+
+   ```terminal
+   <variable-name>=SOME_VALUE
+   ```
+
+   Example:
+
+   ```terminal
+   VARIABLE_NAME=SOME_VALUE
+   ```
+
+3. Move the pointer using arrows on the keyboard (`UpArrow`, `DownArrow`, `LeftArrow`, `RightArrow`).
+
+4. Delete `SOME_VALUE` using the keyboard (`Backspace` or `Delete`).
+
+5. Type `<value>`.
+
+   The text should look similar to this:
+
+   ```terminal
+   <variable-name>=<value>
+   ```
+
+   Example:
+
+   ```terminal
+   VARIABLE_NAME=SOME_NEW_VALUE
+   ```
+
+6. To write the changes:
+
+   1. Press `Ctrl+O`.
+   2. Press `Enter`.
+
+7. To close the editor, press `Ctrl+X`.
 
 ## Secrets
 

@@ -8,9 +8,13 @@
   - [Extension](#extension)
   - [Location](#location)
   - [File path](#file-path)
+    - [`<file-path>` placeholder](#file-path-placeholder)
 - [Directory](#directory)
+  - [Directory path](#directory-path)
+    - [`<directory-path>` placeholder](#directory-path-placeholder)
   - [Subdirectory](#subdirectory)
 - [Path](#path)
+  - [`<path>` placeholder](#path-placeholder)
   - [Absolute path](#absolute-path)
   - [Relative path](#relative-path)
 - [Special paths](#special-paths)
@@ -19,10 +23,6 @@
   - [Current directory (`.`)](#current-directory-)
   - [Parent directory (`..`)](#parent-directory-)
   - [`Desktop` directory](#desktop-directory)
-- [Placeholders](#placeholders)
-  - [`<directory-path>` placeholder](#directory-path-placeholder)
-  - [`<file-path>` placeholder](#file-path-placeholder)
-  - [`<fd-path>` placeholder](#fd-path-placeholder)
 
 ## What is a file system
 
@@ -62,11 +62,33 @@ Example: for the file `/home/user/project/README.md`, the location is `/home/use
 
 The [path](#path) of a [file](#file).
 
+#### `<file-path>` placeholder
+
+The [file path](#file-path) (without `<` and `>`).
+
+Examples:
+
+- `../README.md` ([relative path](#relative-path))
+- `~/.ssh/config` ([absolute path](#absolute-path))
+
 ## Directory
 
 A directory (a.k.a. "folder" on `Windows`) is a special type of [file](#file) that contains other files and directories.
 
 Directories nest inside one another, forming a tree structure rooted at the [root directory](#root-directory-).
+
+### Directory path
+
+The [path](#path) of a [directory](#directory).
+
+Examples:
+
+- `../wiki` ([relative path](#relative-path))
+- `~/.ssh` ([absolute path](#absolute-path))
+
+#### `<directory-path>` placeholder
+
+The [directory path](#directory-path) (without `<` and `>`).
 
 ### Subdirectory
 
@@ -77,6 +99,10 @@ Example: for the [path](#path) `wiki/images/`, `images/` is a subdirectory of `w
 ## Path
 
 A path points to a [location](#location) in the [filesystem](#what-is-a-file-system).
+
+### `<path>` placeholder
+
+The [path](#path) of a [file](#file) or a [directory](#directory) (without `<` and `>`).
 
 ### Absolute path
 
@@ -143,32 +169,3 @@ The `Desktop` directory is the folder that corresponds to the desktop on your sc
 `Linux`: `~/Desktop/` (see [home directory (`~`)](#home-directory-))
 `macOS`: `~/Desktop/`
 `WSL`: `~/Desktop/`
-
-## Placeholders
-
-<!-- no toc -->
-- [`<directory-path>` placeholder](#directory-path-placeholder)
-- [`<file-path>` placeholder](#file-path-placeholder)
-- [`<fd-path>` placeholder](#fd-path-placeholder)
-
-### `<directory-path>` placeholder
-
-The [path](#path) of a [directory](#directory) (without `<` and `>`).
-
-Examples:
-
-- `../wiki` ([relative path](#relative-path))
-- `~/.ssh` ([absolute path](#absolute-path))
-
-### `<file-path>` placeholder
-
-The [path](#path) of a [file](#file) (without `<` and `>`).
-
-Examples:
-
-- `../README.md` ([relative path](#relative-path))
-- `~/.ssh/config` ([absolute path](#absolute-path))
-
-### `<fd-path>` placeholder
-
-The [`<file-path>`](#file-path-placeholder) or the [`<directory-path>`](#directory-path-placeholder).

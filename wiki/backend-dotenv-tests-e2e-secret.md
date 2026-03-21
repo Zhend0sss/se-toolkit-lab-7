@@ -16,7 +16,7 @@ Default values: [`backend/.env.tests.e2e.example`](../backend/.env.tests.e2e.exa
 
 See [LMS API base URL](./lms-api.md#lms-api-base-url).
 
-Example: `http://192.0.2.1:42002`
+Example: `<lms-api-base-url>`
 
 ## `LMS_API_KEY`
 

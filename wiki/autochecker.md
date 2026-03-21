@@ -11,12 +11,14 @@
 
 ## What is the `Autochecker`
 
-The autochecker is a system that you can ask to [check](#check-the-task-using-the-autochecker-bot) your repository and your VM when you work on a task.
+The `Autochecker` is a system that you can ask to [check](#check-the-task-using-the-autochecker-bot) your repository and your VM when you work on a task.
 
-It has two main components:
+It has three main components:
 
+<!-- no toc -->
 - [The `Autochecker` bot](#the-autochecker-bot)
 - [The `Autochecker` agent](#the-autochecker-agent)
+- [The `Autochecker` API](./autochecker-api.md#about-the-autochecker-api)
 
 ## The `Autochecker` bot
 

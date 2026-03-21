@@ -80,7 +80,7 @@ Alternatively, the name of that branch (without `<` and `>`).
 
 - [`<repo-name>`](./github.md#repo-name) with [`<lab-repo-name>`](./lab.md#lab-repo-name)
 - [`<branch>`](./git.md#branch) with [`<task-branch>`](./git-workflow.md#task-branch)
-- [`<your-github-username>`](./github.md#your-github-username)
+- [`<your-github-username>`](./github.md#your-github-username-placeholder)
 
 > [!WARNING]
 > By default, `GitHub` sets the base repository to the upstream (`inno-se-toolkit`). You must **change the base repository to your own fork** (`<your-github-username>/<lab-repo-name>`) before creating the PR. Do **not** create PRs to the upstream repo.

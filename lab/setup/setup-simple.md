@@ -31,6 +31,9 @@
 > [!TIP]
 > In the instructions below, values you need to replace are marked like this: **`YOUR_VALUE`**. Replace the entire placeholder (including the `<` and `>` if present) with your actual value.
 
+> [!TIP]
+> First ask your [coding agent](#111-coding-agent), then ask the TA.
+
 ### 1.1. Set up your fork
 
 #### 1.1.1. Fork the course instructors' repo
@@ -86,8 +89,8 @@ We refer to your fork as `fork` and to the original repo as `upstream`.
    Open `.env.docker.secret` and set:
 
    ```text
-   AUTOCHECKER_EMAIL=YOUR_EMAIL@innopolis.university
-   AUTOCHECKER_PASSWORD=YOUR_GITHUB_USERNAMEYOUR_TELEGRAM_ALIAS
+   AUTOCHECKER_API_LOGIN=YOUR_EMAIL@innopolis.university
+   AUTOCHECKER_API_PASSWORD=YOUR_GITHUB_USERNAMEYOUR_TELEGRAM_ALIAS
    ```
 
    Replace **`YOUR_EMAIL`**, **`YOUR_GITHUB_USERNAME`**, and **`YOUR_TELEGRAM_ALIAS`** with your actual values. Example: if your GitHub username is `johndoe` and your Telegram alias is `jdoe`, the password is `johndoejdoe`.
@@ -154,6 +157,12 @@ Replace **`YOUR_VM_USERNAME`** and **`YOUR_VM_IP`** with your values.
    ```
 
 > <h3>Troubleshooting</h3>
+>
+> **`=> ERROR [backend builder 6/6] RUN --mount=type=cache,target=/root/.cache/uv     uv sync --  0.3s`**
+>
+> The problem is intentional.
+>
+> Ask your [coding agent](#111-coding-agent) to run the `docker compose` command and debug.
 >
 > **Port conflict (`port is already allocated`).**
 >
@@ -225,8 +234,8 @@ The database starts empty. You need to run the ETL pipeline to populate it with 
 
    ```json
    {
-     "items_loaded": 120,
-     "logs_loaded": 5000
+     "new_records": 120,
+     "total_records": 9502
    }
    ```
 
@@ -296,7 +305,7 @@ The autochecker tests your bot against your **deployed backend on your VM**. You
    nano .env.docker.secret
    ```
 
-   Set `AUTOCHECKER_EMAIL`, `AUTOCHECKER_PASSWORD`, and `LMS_API_KEY` (use the same values as locally).
+   Set `AUTOCHECKER_API_LOGIN`, `AUTOCHECKER_API_PASSWORD`, and `LMS_API_KEY` (use the same values as locally).
 
 6. Configure Docker DNS (required on most university VMs):
 
@@ -368,16 +377,16 @@ Your bot needs an LLM for the intent routing feature (Task 3). [Qwen Code](../..
 > If you set up the Qwen Code API in Lab 6, it should still be running on your VM. Verify by running this **on your VM**:
 >
 > ```terminal
-> grep QWEN_API_KEY ~/qwen-code-oai-proxy/.env
+> grep QWEN_CODE_API_KEY ~/qwen-code-oai-proxy/.env
 > ```
 >
 > This shows your key. Then test it:
 >
 > ```terminal
-> curl -s http://localhost:42005/v1/models -H "Authorization: Bearer YOUR_QWEN_API_KEY" | head -c 100
+> curl -s http://localhost:42005/v1/models -H "Authorization: Bearer YOUR_QWEN_CODE_API_KEY" | head -c 100
 > ```
 >
-> Replace **`YOUR_QWEN_API_KEY`** with the value from the grep output.
+> Replace **`YOUR_QWEN_CODE_API_KEY`** with the value from the grep output.
 >
 > If this returns a JSON response with model info, you're good — skip to the next step.
 
@@ -429,20 +438,20 @@ You need a Telegram bot token to run your bot client.
 
    ```text
    BOT_TOKEN=your-token-from-botfather
-   LMS_API_URL=http://localhost:42002
+   LMS_API_BASE_URL=http://localhost:42002
    LMS_API_KEY=same-value-as-in-env-docker-secret
    LLM_API_KEY=your-qwen-api-key-from-step-1.9
    LLM_API_BASE_URL=http://localhost:42005/v1
    LLM_API_MODEL=coder-model
    ```
 
-   The `LMS_API_KEY` must match what you set in `.env.docker.secret`. The `LLM_API_KEY` is the `QWEN_API_KEY` from step 1.9.
+   The `LMS_API_KEY` must match what you set in `.env.docker.secret`. The `LLM_API_KEY` is the `QWEN_CODE_API_KEY` from step 1.9.
 
 8. Verify the LLM works from your VM:
 
    ```terminal
    curl -s http://localhost:42005/v1/chat/completions \
-     -H "Authorization: Bearer YOUR_QWEN_API_KEY" \
+     -H "Authorization: Bearer YOUR_QWEN_CODE_API_KEY" \
      -H "Content-Type: application/json" \
      -d '{"model":"coder-model","messages":[{"role":"user","content":"What is 2+2?"}]}' | head -c 100
    ```

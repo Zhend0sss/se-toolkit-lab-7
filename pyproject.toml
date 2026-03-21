@@ -1,5 +1,5 @@
 [tool.uv.workspace]
-members = ["backend"]
+members = ["backend", "bot"]
 
 [dependency-groups]
 dev = [
@@ -87,8 +87,20 @@ help = "Query the Qwen Code API: poe query-qwen-code-api [OPTIONS] <prompt>"
 cmd = "python scripts/query-qwen-code-api.py"
 envfile = ".env.bot.secret"
 
+# Bot
+
+[tool.poe.tasks.bot]
+help = "Run bot in Telegram mode"
+cmd = "python bot/bot.py"
+envfile = ".env.bot.secret"
+
+[tool.poe.tasks.bot-test]
+help = "Run bot in Test mode"
+cmd = "python bot/bot.py --test"
+envfile = ".env.bot.secret"
+
 [tool.pyright]
-include = ["backend"]
+include = ["backend", "bot"]
 exclude = ["**/__pycache__", "**/node_modules", "**/.*", ".venv", ".direnv"]
 typeCheckingMode = "strict"
 reportAssignmentType = "none"
@@ -100,4 +112,4 @@ pythonpath = ["backend"]
 asyncio_mode = "auto"
 
 [tool.ty.src]
-include = ["backend"]
+include = ["backend", "bot"]

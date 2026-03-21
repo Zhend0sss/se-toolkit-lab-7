@@ -167,7 +167,11 @@ In Telegram, try:
 
 If a command works in `--test` but not in Telegram, check `bot.log` — it's usually a handler that crashes only when called from the Telegram transport layer.
 
-## Acceptance criteria
+### On `GitHub`
+
+- [ ] [`Git workflow`](../../../wiki/git-workflow.md) followed (issue, branch, PR, review, merge).
+
+### On the VM (REMOTE)
 
 - [ ] `--test "/start"` returns text containing "welcome" or bot name.
 - [ ] `--test "/help"` lists at least 4 `/command` entries.
@@ -175,5 +179,7 @@ If a command works in `--test` but not in Telegram, check `bot.log` — it's usu
 - [ ] `--test "/labs"` lists at least 2 labs.
 - [ ] `--test "/scores lab-04"` shows task names and scores.
 - [ ] With backend stopped, `--test "/health"` returns a message with the actual error (e.g., "connection refused", "HTTP 502"), no raw `Traceback`.
-- [ ] Bot responds to `/health` and `/labs` in Telegram with real data.
-- [ ] Git workflow followed.
+
+### In `Telegram`
+
+- [ ] Bot responds to `/health` and `/labs` in `Telegram` with real data.
