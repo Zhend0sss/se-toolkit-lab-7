@@ -1,4 +1,18 @@
-"""Command handlers for the LMS bot."""
+"""Command handlers for the LMS bot.
+
+Handlers use the LMS client to fetch real data from the backend.
+"""
+
+from services.lms_client import LMSClient
+from config import Config
+
+
+def get_lms_client() -> LMSClient:
+    """Create LMS client from config."""
+    return LMSClient(
+        base_url=Config.LMS_API_URL,
+        api_key=Config.LMS_API_KEY,
+    )
 
 
 def handle_start(user_input: str = "") -> str:
@@ -18,16 +32,50 @@ def handle_help(user_input: str = "") -> str:
 
 def handle_health(user_input: str = "") -> str:
     """Handle /health command - check backend status."""
-    return "Backend status: OK (placeholder)"
+    client = get_lms_client()
+    result = client.health_check()
+    client.close()
+    return result["message"]
 
 
 def handle_labs(user_input: str = "") -> str:
     """Handle /labs command - list available labs."""
-    return "Available labs: lab-01, lab-02, lab-03, lab-04 (placeholder)"
+    client = get_lms_client()
+    labs = client.get_labs()
+    client.close()
+    
+    if not labs:
+        return "No labs available or backend is unreachable."
+    
+    lines = ["Available labs:"]
+    for lab in labs:
+        title = lab.get("title", "Unknown")
+        lines.append(f"- {title}")
+    
+    return "\n".join(lines)
 
 
 def handle_scores(user_input: str = "") -> str:
     """Handle /scores command - show scores for a lab."""
-    if user_input.strip():
-        return f"Scores for {user_input}: Task 1: 80%, Task 2: 75% (placeholder)"
-    return "Please specify a lab, e.g., /scores lab-01"
+    if not user_input.strip():
+        return "Please specify a lab, e.g., /scores lab-04"
+    
+    client = get_lms_client()
+    result = client.get_pass_rates(user_input.strip())
+    client.close()
+    
+    if not result["success"]:
+        return f"Error: {result['error']}"
+    
+    data = result.get("data", [])
+    if not data:
+        return f"No pass rate data available for {user_input}."
+    
+    lines = [f"Pass rates for {user_input}:"]
+    for item in data:
+        task_name = item.get("task_title", item.get("title", "Unknown"))
+        rate = item.get("pass_rate", 0)
+        attempts = item.get("attempts", 0)
+        lines.append(f"- {task_name}: {rate:.1f}% ({attempts} attempts)")
+    
+    return "\n".join(lines)
