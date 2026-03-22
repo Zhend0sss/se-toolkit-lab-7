@@ -214,10 +214,19 @@ Check `bot.log` for the debug output — same `[tool]` lines you saw in `--test`
 
 ## Acceptance criteria
 
+### On `GitHub`
+
+- [ ] [`Git workflow`](../../../wiki/git-workflow.md) followed (issue, branch, PR, review, merge).
+
+### On `GitHub` on the `main` branch
+
+- [ ] Source code contains keyboard/button setup.
+- [ ] Source code defines at least 9 tool/function schemas.
+- [ ] The LLM decides which tool to call — no regex or keyword matching in the routing path.
+- [ ] After the LLM returns tool calls, results are fed back to the LLM for the final answer.
+
+### On the VM (REMOTE)
+
 - [ ] `--test "what labs are available"` returns non-empty answer (at least 20 chars).
 - [ ] `--test "which lab has the lowest pass rate"` mentions a specific lab.
 - [ ] `--test "asdfgh"` returns a helpful message, no crash.
-- [ ] Source code contains keyboard/button setup.
-- [ ] Source code defines at least 9 tool/function schemas.
-- [ ] The LLM decides which tool to call — no regex or keyword matching in the routing path. After the LLM returns tool calls, results are fed back to the LLM for the final answer.
-- [ ] Git workflow followed.

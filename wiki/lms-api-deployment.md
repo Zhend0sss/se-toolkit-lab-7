@@ -35,11 +35,11 @@ This page describes how to deploy the [LMS API](./lms-api.md#about-the-lms-api) 
 
    to `~/se-toolkit-lab-7`.
 
-   Replace the placeholder [`<your-github-username>`](./github.md#your-github-username).
+   Replace the placeholder [`<your-github-username>`](./github.md#your-github-username-placeholder).
 
 ### Enter the repository directory (REMOTE)
 
-1. To enter the [directory](./file-system.md#directory) of your [repository](./git.md#repository),
+1. To enter the repository directory,
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -57,42 +57,11 @@ This page describes how to deploy the [LMS API](./lms-api.md#about-the-lms-api) 
    cp .env.docker.example .env.docker.secret
    ```
 
-2. To open the file in `nano`,
+2. [Set the variables in `.env.docker.secret`](./environments.md#set-the-variable-to-value-in-the-env-file-at-file-path):
 
-   [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
-
-   ```terminal
-   nano .env.docker.secret
-   ```
-
-3. Set the [`Autochecker` API credentials](./autochecker-api.md#autochecker-api-credentials):
-
-   ```text
-   AUTOCHECKER_API_LOGIN=<autochecker-api-login>
-   AUTOCHECKER_API_PASSWORD=<autochecker-api-password>
-   ```
-
-   Replace the placeholders:
-
-   - [`<autochecker-api-login>`](./autochecker-api.md#autochecker-api-login-placeholder)
-   - [`<autochecker-api-password>`](./autochecker-api.md#autochecker-api-password-placeholder)
-
-4. Set the [LMS API key](./lms-api.md#lms-api-key).
-
-   ```text
-   LMS_API_KEY=<lms-api-key>
-   ```
-
-   Replace the placeholder [`<lms-api-key>`](./lms-api.md#lms-api-key-placeholder).
-
-   See [API key format](./web-api.md#api-key-format).
-
-5. To write the changes:
-
-   1. Press `Ctrl+O`.
-   2. Press `Enter`.
-
-6. To close the editor, press `Ctrl+X`.
+   - [`AUTOCHECKER_API_LOGIN`](./dotenv-docker-secret.md#autochecker_api_login)
+   - [`AUTOCHECKER_API_PASSWORD`](./dotenv-docker-secret.md#autochecker_api_password)
+   - [`LMS_API_KEY`](./lms-api.md#lms-api-key)
 
 ### Start the services (REMOTE)
 

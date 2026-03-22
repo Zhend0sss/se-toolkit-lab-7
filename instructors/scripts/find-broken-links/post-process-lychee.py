@@ -1,14 +1,18 @@
 """Post-process lychee --format json output to add file:line locations."""
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
 
+from markdown_it import MarkdownIt
 from pydantic import BaseModel
 
 # ANSI colours — only when writing to a real terminal
 _TTY = sys.stdout.isatty()
+
+_md = MarkdownIt()
 
 
 def _c(code: str, text: str) -> str:
@@ -42,33 +46,81 @@ def _display_url(url: str) -> str:
 
 
 def find_locations(filepath: str, url: str) -> list[tuple[int, int, str]]:
-    # lychee normalizes relative file links to absolute file:// URLs.
-    # Reconstruct a searchable pattern from just the basename + fragment.
-    if url.startswith("file://"):
-        path_part = re.sub(r"^file://", "", url)
-        basename = path_part.split("/")[
-            -1
-        ]  # e.g. "task-1.md#6-authorize-in-swagger-ui"
-        esc = re.escape(basename)
-        # Only match the basename when it appears inside the URL delimiters
-        # `(…)` or `"…"`, so we skip the display text of markdown links like
-        # [`docker-compose.yml`](../../docker-compose.yml) and land on the URL.
-        pattern = re.compile(r'(?<=\(|")(?:\.\.?/|[\w.-]+/)*' + esc)
-    else:
-        pattern = re.compile(re.escape(url.rstrip("/")))
+    """Find source locations of a broken link using markdown AST parsing.
 
-    results: list[tuple[int, int, str]] = []
+    Parses the file with markdown-it-py to extract all links, resolves each
+    href to an absolute path (mirroring lychee's resolution), and matches
+    against the reported URL.  This avoids false positives from the previous
+    basename-only regex approach.
+    """
+    if not url.startswith("file://"):
+        # Non-file URLs: fall back to plain text search.
+        pattern = re.compile(re.escape(url.rstrip("/")))
+        results: list[tuple[int, int, str]] = []
+        try:
+            with open(filepath) as f:
+                for i, line in enumerate(f, 1):
+                    m = pattern.search(line)
+                    if m:
+                        results.append((i, m.start() + 1, line[m.start() : m.end()].rstrip()))
+        except (OSError, UnicodeDecodeError):
+            pass
+        return results
+
+    # Decompose lychee's absolute file:// URL into path + fragment.
+    url_path = re.sub(r"^file://", "", url)
+    url_file, _, url_fragment = url_path.partition("#")
+    url_file_norm = os.path.normpath(url_file)
+
     try:
         with open(filepath) as f:
-            for i, line in enumerate(f, 1):
-                m = pattern.search(line)
-                if m:
-                    start = m.start()
-                    raw_link = line[start : m.end()].rstrip()
-                    results.append((i, start + 1, raw_link))
+            content = f.read()
     except (OSError, UnicodeDecodeError):
-        pass
-    return results
+        return []
+
+    lines = content.splitlines()
+    source_dir = os.path.dirname(os.path.abspath(filepath))
+    cwd = str(Path.cwd())
+    tokens = _md.parse(content)
+
+    results: list[tuple[int, int, str]] = []
+    for token in tokens:
+        if not token.children or not token.map:
+            continue
+        for child in token.children:
+            if child.type == "link_open":
+                href = dict(child.attrs or {}).get("href", "")
+            elif child.type == "image":
+                href = dict(child.attrs or {}).get("src", "")
+            else:
+                continue
+            if not href:
+                continue
+
+            # Resolve the href to an absolute path the same way lychee does.
+            href_path, _, href_fragment = href.partition("#")
+            if href_path:
+                if href_path.startswith("/"):
+                    resolved = os.path.normpath(cwd + href_path)
+                else:
+                    resolved = os.path.normpath(os.path.join(source_dir, href_path))
+            else:
+                # Fragment-only link targets the source file itself.
+                resolved = os.path.normpath(os.path.abspath(filepath))
+
+            if resolved != url_file_norm or href_fragment != url_fragment:
+                continue
+
+            # Found a matching broken link — locate exact column.
+            start_line, end_line = token.map
+            for i in range(start_line, min(end_line, len(lines))):
+                col = lines[i].find(href)
+                if col >= 0:
+                    results.append((i + 1, col + 1, href))
+                    break
+
+    # Deduplicate while preserving order.
+    return list(dict.fromkeys(results))
 
 
 raw = sys.stdin.read()

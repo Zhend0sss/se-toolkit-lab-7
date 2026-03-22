@@ -10,6 +10,8 @@
   - [`<qwen-code-api-host-port>` placeholder](#qwen-code-api-host-port-placeholder)
 - [`Qwen Code` API base URL](#qwen-code-api-base-url)
   - [`<qwen-code-api-base-url>` placeholder](#qwen-code-api-base-url-placeholder)
+- [`Qwen Code` API model](#qwen-code-api-model)
+  - [`<qwen-code-api-model>`](#qwen-code-api-model-1)
 - [Check that the `Qwen Code` API is accessible](#check-that-the-qwen-code-api-is-accessible)
 
 ## What is `Qwen Code` API
@@ -77,6 +79,18 @@ See:
 
 [`Qwen Code` API base URL](#qwen-code-api-base-url) (without `<` and `>`).
 
+## `Qwen Code` API model
+
+The identifier of a `Qwen` model available in `Qwen Code` API.
+
+[View available models](./qwen-code.md#view-available-models).
+
+Example: `coder-model`.
+
+### `<qwen-code-api-model>`
+
+[`Qwen Code` API model](#qwen-code-api-model) (without `<` and `>`).
+
 ## Check that the `Qwen Code` API is accessible
 
 > [!NOTE]
@@ -101,8 +115,8 @@ See:
    Replace the placeholders:
 
    - [`<qwen-code-api-base-url>`](#qwen-code-api-base-url-placeholder) (depends on the case (REMOTE or LOCAL))
-   - `<qwen-code-api-key>` with the value of [`QWEN_CODE_API_KEY`](./qwen-code-api-dotenv-secret.md#qwen_code_api_key) from [`qwen-code-api/.env.secret`](./qwen-code-api-dotenv-secret.md#about-qwen-code-apienvsecret)
-   - `<qwen-code-api-model>` with one of the [available models](./qwen-code.md#view-available-models)
+   - [`<qwen-code-api-key>`](#qwen-code-api-key)
+   - [`<qwen-code-api-model>`](#qwen-code-api-model)
 
 2. When you run it, the output should be similar to this:
 

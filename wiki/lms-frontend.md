@@ -7,7 +7,7 @@
   - [Items page](#items-page)
   - [Dashboard page](#dashboard-page)
 - [Authentication](#authentication)
-- [Development server](#development-server)
+- [Set up the LMS frontend development server](#set-up-the-lms-frontend-development-server)
 - [Production build](#production-build)
 
 ## About the LMS frontend
@@ -61,7 +61,7 @@ After you enter the key, the frontend stores it in the browser's `localStorage` 
 
 Click **Disconnect** in the navigation bar to clear the stored key and return to the login form.
 
-## Development server
+## Set up the LMS frontend development server
 
 [`Vite`](https://vite.dev/) runs a development server that serves the frontend locally and [proxies](./web-infrastructure.md#reverse-proxy) API requests to the backend.
 
@@ -75,7 +75,17 @@ The proxy target is configured by [`VITE_API_TARGET`](./frontend-dotenv-secret.m
    cd frontend
    ```
 
-2. To install [`Node.js`](./nodejs.md#what-is-nodejs) dependencies,
+2. To create the [environment file](./frontend-dotenv-secret.md#what-is-frontendenvsecret),
+
+   [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
+
+   ```terminal
+   cp .env.example .env.secret
+   ```
+
+   Then set [`VITE_API_TARGET`](./frontend-dotenv-secret.md#vite_api_target) to your [LMS API base URL](./lms-api.md#lms-api-base-url).
+
+3. To install [`Node.js`](./nodejs.md#what-is-nodejs) dependencies,
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
@@ -83,7 +93,7 @@ The proxy target is configured by [`VITE_API_TARGET`](./frontend-dotenv-secret.m
    pnpm install
    ```
 
-3. To start the development server,
+4. To start the development server,
 
    [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 

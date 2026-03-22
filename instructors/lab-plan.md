@@ -73,6 +73,7 @@ run `whoami`, reply to the bot).
 > This prevents students from deploying someone else's code.
 >
 > **Implications:**
+>
 > - `--test` mode hits the **real backend on localhost** — no mock client needed
 > - If the backend is down, `/health` should report it as down (correct behavior)
 > - Student must have their repo cloned and their code deployed on the VM
@@ -121,6 +122,7 @@ backend is deployed and running, and the database has data (ETL synced).
 Mirrors Lab 6 setup checks + deployment + sync.
 
 **What students do:**
+
 1. Fork the lab-7 template repo on GitHub, enable Issues
 2. Ensure SSH key is in `~/.ssh/authorized_keys` (from Lab 6 Task 3)
 3. Register `vm_username` with the bot (if not already done)
@@ -156,12 +158,14 @@ Mirrors Lab 6 setup checks + deployment + sync.
 **Goal:** Use Qwen Code to create a development plan and project skeleton.
 
 **What students do:**
+
 1. Give the prioritized requirements to Qwen Code
 2. Ask it to produce an implementation plan
 3. Ask it to scaffold the project
 4. Verify the scaffold runs
 
 **Deliverables:**
+
 - `bot/PLAN.md` — development plan produced with agent assistance
 - Bot code in a `bot/` directory with separated handler layer
 - Bot dependencies in `bot/pyproject.toml` (managed with `uv sync`)
@@ -196,6 +200,7 @@ Mirrors Lab 6 setup checks + deployment + sync.
 **Goal:** Connect the bot to the student's LMS backend with real data commands.
 
 **What students do:**
+
 1. Implement `/health` that calls `GET /items` on their backend
 2. Implement `/labs` and `/scores <lab>` data commands
 3. Handle backend errors gracefully
@@ -238,6 +243,7 @@ uses an LLM to determine the user's intent, pick the right backend tools,
 and compose a response. This is a mini-agent inside the bot.
 
 **What students do:**
+
 1. Define available "tools" — backend API endpoints the LLM can call
 2. Implement an intent router: user message → LLM decides which tools
    to call → fetches data → formats response
@@ -245,6 +251,7 @@ and compose a response. This is a mini-agent inside the bot.
 4. Handle ambiguous and invalid inputs gracefully
 
 **How it works:**
+
 ```
 User: "which lab has the worst results?"
 Bot:  → sends message + tool definitions to LLM
@@ -328,6 +335,7 @@ agent is embedded inside a user-facing product.
 **Goal:** Containerize the bot (move from `nohup` to Docker) and document deployment.
 
 **What students do:**
+
 1. Create `bot/Dockerfile`
 2. Add bot service to `docker-compose.yml`
 3. Handle Docker networking (backend via service name, qwen proxy via `host.docker.internal`)
@@ -347,6 +355,7 @@ agent is embedded inside a user-facing product.
 | t4-health | Backend still healthy alongside bot | SSH | `curl -sf http://localhost:42002/docs` returns 200 |
 
 **TA verification (demo):**
+
 - Bot responds to `/start`, `/help`, `/health` in Telegram
 - At least 2 data commands return real backend data
 - Plain text questions get routed correctly (intent detection works)
@@ -365,26 +374,31 @@ agent is embedded inside a user-facing product.
 **SSH as student's main user** — runtime & deployment checks on the VM:
 
 **Setup (10 checks)**
+
 - GitHub: repo exists, is fork, issues enabled
 - SSH: connectivity, repo at correct path, env files exist (docker + bot),
   backend running, data synced, LLM API reachable
 
 **Task 1 — Plan & Scaffold (5 structural + 3 eval)**
+
 - GitHub: PLAN.md exists, pyproject.toml, handlers/
 - SSH: uv sync
 - SSH+LLM: PLAN.md quality (covers key topics)
 - Eval: `/start`, `/help`, `/foo` (unknown command)
 
 **Task 2 — Backend Integration (8 eval)**
+
 - Eval: `/start`, `/help`, `/health`, `/labs`, `/scores lab-04`,
   `/scores lab-01` (unseen), `/scores` (no arg), error handling
 
 **Task 3 — Intent Routing (2 structural + 7 eval)**
+
 - GitHub: button/keyboard code, ≥9 tool schemas
 - Eval (via student's LLM): labs query, scores query, multi-step,
   fallback, top learners (unseen), enrolled count (unseen), greeting (unseen)
 
 **Task 4 — Containerize & Document (7 checks)**
+
 - GitHub: Dockerfile, README deploy heading
 - SSH+LLM: README deploy section quality
 - SSH: repo integrity, compose has bot, container running, backend healthy
@@ -427,6 +441,7 @@ cd bot && uv run bot.py --test "asdfgh"
 ```
 
 **Behavior:**
+
 - Prints the bot's response text to **stdout**
 - Hits the **real backend on localhost:42002** (reads config from `.env.bot.secret`)
 - Exits with code **0** on success, **non-zero** on error
@@ -435,6 +450,7 @@ cd bot && uv run bot.py --test "asdfgh"
 - Messages without `/` prefix go through the intent router (Task 3)
 
 **Why this matters:**
+
 - Autochecker can verify handler logic without Telegram
 - Forces students to separate handlers from transport (good architecture)
 - Makes development faster (test without deploying to Telegram)
@@ -487,6 +503,7 @@ se-toolkit-lab-7/           ← forked repo (already has backend/, frontend/, et
 
 Students don't have to follow this exactly — it's a suggestion. The key
 requirements are:
+
 - Handlers testable without Telegram (via `--test` mode)
 - Intent router uses tool/function definitions the LLM can choose from
 - Slash commands and plain text both work
@@ -511,6 +528,7 @@ Pass threshold: 75% (consistent with other labs)
 Lab 7 forks `se-toolkit-lab-6`. Here's what carries over and what changes.
 
 **Reused as-is (check types + engine methods):**
+
 - `repo_exists`, `repo_is_fork`, `repo_has_issues` — standard GitHub checks
 - `ssh_check` — SSH connectivity and command execution via `vm_username`
   (routes internal 10.x IPs through relay, public IPs direct)
@@ -522,13 +540,15 @@ Lab 7 forks `se-toolkit-lab-6`. Here's what carries over and what changes.
 - `depends_on` between checks (e.g., `backend_running` depends on `ssh_connectivity`)
 
 **Reused with modifications:**
+
 - `backend_running` — same `ssh_check` type, update port to 42002 and path to `/docs`
-- `.env.example` regex check — different env vars: `BOT_TOKEN`, `LMS_API_URL`,
+- `.env.example` regex check — different env vars: `BOT_TOKEN`, `LMS_API_BASE_URL`,
   `LMS_API_KEY`, `LLM_API_KEY` (same as Lab 6, plus `BOT_TOKEN`)
 - `glob_exists` for required files — different file list (PLAN.md, handlers/,
   bot.py vs Lab 6's agent.py, AGENT.md)
 
 **Not reused (Lab 6 specific):**
+
 - `agent_eval` check type (Docker sandbox eval with question bank)
 - `issue_pr_approved` (PR approval workflow — TBD for Lab 7)
 - `clone_and_run` (replaced by SSH-only checks)
@@ -536,6 +556,7 @@ Lab 7 forks `se-toolkit-lab-6`. Here's what carries over and what changes.
 - `task2_agent_tools` checking for `read_file`/`list_files`
 
 **New for Lab 7:**
+
 - SSH-based `--test` command execution (run `bot.py --test "..."`,
   check stdout) — uses `ssh_check` with custom commands
 - Eval sets per task (seen + unseen test inputs with expected patterns)
@@ -593,12 +614,14 @@ Lab 7 forks `se-toolkit-lab-6`. Here's what carries over and what changes.
 
   2. **Direct LLM call (quality judging):** SSH to VM → curl the student's
      Qwen proxy with a judge prompt. Returns JSON verdict.
+
      ```
      curl -s http://localhost:42005/v1/chat/completions \
        -H "Authorization: Bearer <student's key>" \
        -H "Content-Type: application/json" \
        -d '{"model":"coder-model","messages":[{"role":"user","content":"<judge prompt>"}]}'
      ```
+
      Used for: PLAN.md quality, README deploy section quality.
      Implementation: new engine method `_call_student_llm_via_relay()` that
      wraps the curl in an SSH relay command and parses the JSON response.

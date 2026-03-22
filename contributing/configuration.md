@@ -237,7 +237,7 @@ These files are generated at build or runtime and must not be committed (exclude
 
 ### 3.5. Updating Docker configuration
 
-- **[`backend/Dockerfile`](..backend//Dockerfile):** Keep the multi-stage build pattern. Pin base image versions. Use the institutional container registry for base images.
+- **[`backend/Dockerfile`](../backend/Dockerfile):** Keep the multi-stage build pattern. Pin base image versions. Use the institutional container registry for base images.
 - **[`docker-compose.yml`](../docker-compose.yml):** Parameterize all ports and credentials via environment variables. Add `required` validation for new variables. Keep health checks on database services.
 - **Caddyfile:** Add new route entries when new API endpoints are introduced.
 

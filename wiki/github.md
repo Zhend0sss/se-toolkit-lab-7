@@ -5,9 +5,10 @@
 - [What is `GitHub`](#what-is-github)
 - [The `GitHub` site](#the-github-site)
 - [`GitHub` API](#github-api)
-- [`GitHub` username](#github-username)
-  - [`<your-github-username>`](#your-github-username)
-  - [Find `<your-github-username>`](#find-your-github-username)
+- [`GitHub` account](#github-account)
+  - [`GitHub` username](#github-username)
+    - [`<your-github-username>` placeholder](#your-github-username-placeholder)
+    - [Find `<your-github-username>`](#find-your-github-username)
 - [`GitHub` repository](#github-repository)
   - [`<repo-name>`](#repo-name)
   - [`<repo-url>`](#repo-url)
@@ -57,6 +58,12 @@
 - [File preview](#file-preview)
   - [`Markdown` file preview](#markdown-file-preview)
     - [Copy code block](#copy-code-block)
+- [`gh`](#gh)
+  - [Set up `gh`](#set-up-gh)
+  - [Install `gh`](#install-gh)
+    - [Install `gh` using `Nix`](#install-gh-using-nix)
+  - [Check that `gh` works](#check-that-gh-works)
+  - [Authorize `gh`](#authorize-gh)
 - [Troubleshooting](#troubleshooting)
   - [`git` asks for a password](#git-asks-for-a-password)
   - [`fatal: destination path <directory-path> already exists and is not an empty directory.`](#fatal-destination-path-directory-path-already-exists-and-is-not-an-empty-directory)
@@ -85,21 +92,26 @@ Docs:
 
 - [GitHub REST API documentation](https://docs.github.com/en/rest)
 
-## `GitHub` username
+## `GitHub` account
 
-A `GitHub` username is a unique identifier of a user or an organization on [the `GitHub` site](#the-github-site).
+A `GitHub` account is a registered user or organization profile on [the `GitHub` site](#the-github-site).
 
-Example of a username: `inno-se-toolkit`.
+With a `GitHub` account, you can create and manage [`GitHub` repositories](#github-repository), open [issues](#issue), submit [pull requests](#pull-request), and collaborate with others.
 
-Note that this username doesn't include `@`.
+### `GitHub` username
 
-### `<your-github-username>`
+A `GitHub` username is a unique identifier of a [`GitHub` account](#github-account) — a user or an organization — on [the `GitHub` site](#the-github-site).
 
-Assume `<your-github-username>` is your [`GitHub` username](#github-username).
+> [!IMPORTANT]
+> The username doesn't include `@`.
 
-`<your-github-username>` doesn't include `@`.
+Example: `inno-se-toolkit`.
 
-### Find `<your-github-username>`
+#### `<your-github-username>` placeholder
+
+Your [`GitHub` username](#github-username) (without `@`).
+
+#### Find `<your-github-username>`
 
 1. Go to the [`GitHub` site](#the-github-site).
 2. Sign in if necessary.
@@ -158,7 +170,7 @@ Example: <https://github.com/nixos/nixpkgs/tree/nixpkgs-unstable>
 
 ## Repository owner
 
-Repository owner is an account where the repo is currently stored.
+Repository owner is a [`GitHub` account](#github-account) where the repo is currently stored.
 
 ### `<repo-owner-github-username>`
 
@@ -176,7 +188,7 @@ When you fork a repository on `GitHub`, you create a personal copy under your `G
 2. Go to the repo that you want to fork.
 3. Click `Fork`.
    1. Click `Choose an owner`.
-   2. Click [`<your-github-username>`](#your-github-username) to make you the repo owner.
+   2. Click [`<your-github-username>`](#your-github-username-placeholder) to make you the repo owner.
    3. Click `Create fork`.
 
 ### `<your-fork-url>`
@@ -189,7 +201,7 @@ Then, your fork URL should look like `https://github.com/<your-github-username>/
 
 See also:
 
-- [`<your-github-username>`](#your-github-username)
+- [`<your-github-username>`](#your-github-username-placeholder)
 - [`<repo-name>`](#repo-name).
 
 ### Go to your fork
@@ -504,6 +516,73 @@ Code block example:
 ```terminal
 ls .
 ```
+
+## `gh`
+
+`gh` is a [CLI](./cli.md#what-is-a-cli) for interacting with [`GitHub`](#what-is-github).
+
+You can allow your [coding agent](./coding-agents.md#what-is-a-coding-agent) to use `gh` to automate work with `GitHub`.
+
+### Set up `gh`
+
+Complete these steps:
+
+1. [Install `gh`](#install-gh)
+2. [Authorize `gh`](#authorize-gh)
+
+### Install `gh`
+
+- Method 1: [Install `gh` using `Nix`](#install-gh-using-nix)
+- Method 2: [Install using the official instructions](https://github.com/cli/cli?tab=readme-ov-file#installation)
+
+#### Install `gh` using `Nix`
+
+1. [Install `Nix`](./nix.md#install-nix) if not yet installed.
+
+2. To install [`gh`](#gh) from [`nixpkgs`](./nix.md#nixpkgs),
+
+   [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal)
+
+   ```terminal
+   nix profile install nixpkgs#gh
+   ```
+
+### Check that `gh` works
+
+1. To check that [`gh`](#gh) works,
+
+   [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal)
+
+   ```terminal
+   gh --version
+   ```
+
+   The output should be similar to this:
+
+   ```terminal
+   gh version 2.87.3 (nixpkgs)
+   https://github.com/cli/cli/releases/tag/v2.87.3
+   ```
+
+### Authorize `gh`
+
+1. To authorize `gh` to use your [`GitHub` account],
+
+   [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal)
+
+   ```terminal
+   gh auth login
+   ```
+
+2. Select `GitHub.com` using the keyboard (`UpArrow`, `DownArrow`).
+
+3. Select `HTTPS` using the keyboard (`UpArrow`, `DownArrow`).
+
+4. When prompted `Authenticate Git with your GitHub credentials? (Y/n)`, type `y`.
+
+5. Select `Login with a web browser` or `Paste an authentication token`.
+
+6. Follow the instructions to complete the authentication.
 
 ## Troubleshooting
 

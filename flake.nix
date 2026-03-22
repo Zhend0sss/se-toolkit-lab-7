@@ -19,7 +19,7 @@
       perSystem =
         { pkgs, ... }:
         let
-          python = pkgs.python3.withPackages (ps: [ ps.pydantic ]);
+          python = pkgs.python3.withPackages (ps: [ ps.markdown-it-py ps.pydantic ]);
         in
         {
           devshells.default = {

@@ -37,13 +37,13 @@ Commands for changing permissions:
 [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
 ```terminal
-chmod <mode> <fd-path>
+chmod <mode> <path>
 ```
 
 Replace:
 
 - `<mode>` placeholder with the [mode](./linux.md#mode)
-- [`<fd-path>` placeholder](./file-system.md#fd-path-placeholder)
+- [`<path>` placeholder](./file-system.md#path-placeholder)
 
 ### `chown`
 
@@ -56,7 +56,7 @@ To change the owner and group of a file or a directory,
 [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
 ```terminal
-chown <user>:<group> <fd-path>
+chown <user>:<group> <path>
 ```
 
 Replace the placeholders:
@@ -70,10 +70,10 @@ To change the owner and group recursively for a directory and its contents,
 [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
 
 ```terminal
-chown -R <user>:<group> <fd-path>
+chown -R <user>:<group> <path>
 ```
 
-Replace the placeholder [`<fd-path>`](./file-system.md#fd-path-placeholder).
+Replace the placeholder [`<path>`](./file-system.md#path-placeholder).
 
 ## Get my current user
 

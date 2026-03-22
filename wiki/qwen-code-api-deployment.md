@@ -73,28 +73,9 @@ Complete these steps:
    cp .env.example .env.secret
    ```
 
-2. To open the file in `nano`,
+2. [Set the variable in `.env.secret`](./environments.md#set-the-variable-to-value-in-the-env-file-at-file-path):
 
-   [run in the `VS Code Terminal`](./vs-code.md#run-a-command-in-the-vs-code-terminal):
-
-   ```terminal
-   nano .env.secret
-   ```
-
-3. Set the [`Qwen Code` API key](./qwen-code-api.md#qwen-code-api-key):
-
-   ```terminal
-   QWEN_CODE_API_KEY=<qwen-code-api-key>
-   ```
-
-   Replace the placeholder [`<qwen-code-api-key>`](./qwen-code-api.md#qwen-code-api-key-placeholder).
-
-4. To write the changes:
-
-   1. Press `Ctrl+O`.
-   2. Press `Enter`.
-
-5. To close the editor, press `Ctrl+X`.
+   - [`QWEN_CODE_API_KEY`](./qwen-code-api-dotenv-secret.md#qwen_code_api_key)
 
 ### Start the `Qwen Code` API (REMOTE)
 
