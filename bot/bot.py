@@ -21,10 +21,12 @@ from handlers import (
     handle_labs,
     handle_scores,
 )
+from handlers.intent_router import handle_natural_language
 
 # Telegram imports
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart, Command
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -50,19 +52,35 @@ def run_test_mode(command: str) -> None:
     cmd = parts[0]
     arg = parts[1] if len(parts) > 1 else ""
 
-    handler = get_handler(cmd)
-    if handler:
-        response = handler(arg)
-        print(response)
+    # Check if it's a slash command or natural language
+    if cmd.startswith("/"):
+        handler = get_handler(cmd)
+        if handler:
+            response = handler(arg)
+            print(response)
+        else:
+            print(f"Unknown command: {cmd}")
+            sys.exit(1)
     else:
-        print(f"Unknown command: {cmd}")
-        sys.exit(1)
+        # Natural language query - use intent router
+        full_message = f"{cmd} {arg}".strip()
+        response = handle_natural_language(full_message)
+        print(response)
 
 
 async def start_command(message: types.Message) -> None:
     """Handle /start command from Telegram."""
     response = handle_start()
-    await message.answer(response)
+    
+    # Create inline keyboard with common actions
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📊 Check Health", callback_data="health")],
+        [InlineKeyboardButton(text="📚 List Labs", callback_data="labs")],
+        [InlineKeyboardButton(text="📈 Scores Lab 04", callback_data="scores_lab-04")],
+        [InlineKeyboardButton(text="❓ Help", callback_data="help")],
+    ])
+    
+    await message.answer(response, reply_markup=keyboard)
 
 
 async def help_command(message: types.Message) -> None:
@@ -91,6 +109,39 @@ async def scores_command(message: types.Message) -> None:
     await message.answer(response)
 
 
+async def callback_query_handler(callback_query: types.CallbackQuery) -> None:
+    """Handle inline keyboard button clicks."""
+    data = callback_query.data
+    
+    if data == "health":
+        response = handle_health()
+    elif data == "labs":
+        response = handle_labs()
+    elif data.startswith("scores_"):
+        lab = data.replace("scores_", "")
+        response = handle_scores(lab)
+    elif data == "help":
+        response = handle_help()
+    else:
+        response = "Unknown action."
+    
+    await callback_query.message.answer(response)
+    await callback_query.answer()
+
+
+async def natural_language_handler(message: types.Message) -> None:
+    """Handle natural language messages via LLM routing."""
+    user_text = message.text or ""
+    logger.info(f"Natural language query: {user_text}")
+    
+    try:
+        response = handle_natural_language(user_text)
+        await message.answer(response)
+    except Exception as e:
+        logger.error(f"Error in natural language handler: {e}")
+        await message.answer("Sorry, I encountered an error processing your query. Please try again.")
+
+
 async def echo_handler(message: types.Message) -> None:
     """Catch-all handler for unknown messages."""
     logger.info(f"Received message: {message.text}")
@@ -116,6 +167,10 @@ async def run_telegram_mode() -> None:
     dp.message.register(health_command, Command("health"))
     dp.message.register(labs_command, Command("labs"))
     dp.message.register(scores_command, Command("scores"))
+    # Callback query handler for inline buttons
+    dp.callback_query.register(callback_query_handler)
+    # Natural language handler (must be before catch-all)
+    dp.message.register(natural_language_handler)
     # Catch-all handler for other messages
     dp.message.register(echo_handler)
 

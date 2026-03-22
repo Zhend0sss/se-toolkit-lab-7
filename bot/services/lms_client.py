@@ -74,10 +74,10 @@ class LMSClient:
 
     def get_pass_rates(self, lab_id: str) -> dict[str, Any]:
         """Get pass rates for a specific lab.
-        
+
         Args:
             lab_id: Lab identifier (e.g., "lab-04")
-            
+
         Returns:
             dict with 'success' bool, 'data' list, 'error' str
         """
@@ -92,7 +92,7 @@ class LMSClient:
                    l.get("id") == int(lab_id.replace("lab-", "")) if lab_id.replace("lab-", "").isdigit() else False:
                     lab = l
                     break
-            
+
             if not lab:
                 # Try direct lookup by assuming lab-XX maps to id XX
                 try:
@@ -103,20 +103,20 @@ class LMSClient:
                             break
                 except (ValueError, AttributeError):
                     pass
-            
+
             if not lab:
                 return {
                     "success": False,
                     "error": f"Lab '{lab_id}' not found.",
                     "data": [],
                 }
-            
+
             # Get analytics for this lab
             lab_title = lab.get("title", "")
             response = client.get("/analytics/pass-rates", params={"lab": lab_title})
             response.raise_for_status()
             data = response.json()
-            
+
             return {
                 "success": True,
                 "data": data,
@@ -140,6 +140,152 @@ class LMSClient:
                 "error": str(e),
                 "data": [],
             }
+
+    def get_pass_rates_data(self, lab: str) -> list[dict[str, Any]]:
+        """Get pass rates data for a lab by title.
+        
+        Args:
+            lab: Lab title or identifier
+            
+        Returns:
+            List of pass rate data
+        """
+        try:
+            client = self._get_client()
+            # Find lab by title or ID
+            labs = self.get_labs()
+            lab_title = lab
+            
+            # Try to find matching lab
+            for l in labs:
+                if lab.lower() in l.get("title", "").lower() or \
+                   str(l.get("id", "")) == lab.replace("lab-", ""):
+                    lab_title = l.get("title", "")
+                    break
+            
+            response = client.get("/analytics/pass-rates", params={"lab": lab_title})
+            response.raise_for_status()
+            return response.json()
+        except Exception:
+            return []
+
+    def get_learners(self, limit: int = 100) -> list[dict[str, Any]]:
+        """Get list of learners.
+        
+        Args:
+            limit: Maximum number to return
+            
+        Returns:
+            List of learner objects
+        """
+        try:
+            client = self._get_client()
+            response = client.get("/learners/")
+            response.raise_for_status()
+            data = response.json()
+            return data[:limit]
+        except Exception:
+            return []
+
+    def get_scores(self, lab: str) -> dict[str, Any]:
+        """Get score distribution for a lab.
+        
+        Args:
+            lab: Lab title
+            
+        Returns:
+            Score distribution data
+        """
+        try:
+            client = self._get_client()
+            response = client.get("/analytics/scores", params={"lab": lab})
+            response.raise_for_status()
+            return response.json()
+        except Exception:
+            return {"error": "Failed to fetch scores"}
+
+    def get_timeline(self, lab: str) -> list[dict[str, Any]]:
+        """Get timeline data for a lab.
+        
+        Args:
+            lab: Lab title
+            
+        Returns:
+            Timeline data
+        """
+        try:
+            client = self._get_client()
+            response = client.get("/analytics/timeline", params={"lab": lab})
+            response.raise_for_status()
+            return response.json()
+        except Exception:
+            return []
+
+    def get_groups(self, lab: str) -> list[dict[str, Any]]:
+        """Get per-group data for a lab.
+        
+        Args:
+            lab: Lab title
+            
+        Returns:
+            Group data
+        """
+        try:
+            client = self._get_client()
+            response = client.get("/analytics/groups", params={"lab": lab})
+            response.raise_for_status()
+            return response.json()
+        except Exception:
+            return []
+
+    def get_top_learners(self, lab: str, limit: int = 5) -> list[dict[str, Any]]:
+        """Get top learners for a lab.
+        
+        Args:
+            lab: Lab title
+            limit: Number of top learners
+            
+        Returns:
+            Top learners data
+        """
+        try:
+            client = self._get_client()
+            response = client.get("/analytics/top-learners", params={"lab": lab, "limit": limit})
+            response.raise_for_status()
+            return response.json()
+        except Exception:
+            return []
+
+    def get_completion_rate(self, lab: str) -> dict[str, Any]:
+        """Get completion rate for a lab.
+        
+        Args:
+            lab: Lab title
+            
+        Returns:
+            Completion rate data
+        """
+        try:
+            client = self._get_client()
+            response = client.get("/analytics/completion-rate", params={"lab": lab})
+            response.raise_for_status()
+            return response.json()
+        except Exception:
+            return {"error": "Failed to fetch completion rate"}
+
+    def trigger_sync(self) -> dict[str, Any]:
+        """Trigger ETL sync.
+        
+        Returns:
+            Sync result
+        """
+        try:
+            client = self._get_client()
+            response = client.post("/pipeline/sync", json={})
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            return {"error": str(e)}
 
     def close(self) -> None:
         """Close the HTTP client."""
